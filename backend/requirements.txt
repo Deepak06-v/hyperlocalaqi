@@ -9,3 +9,5 @@ xgboost==3.0.4
 joblib==1.5.1
 requests==2.32.5
 python-dotenv==1.1.1
+python-multipart==0.0.6
+

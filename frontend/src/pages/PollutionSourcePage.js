@@ -1,42 +1,73 @@
-﻿import { MapCard } from "../components/MapCard.js";
-import { fetchCurrentAQI, fetchSources } from "../components/api.js";
-
-export function PollutionSourcePage() {
+﻿window.PollutionSourcePage = function PollutionSourcePage() {
   const [sources, setSources] = React.useState([]);
+  const [loading, setLoading] = React.useState(true);
 
   React.useEffect(() => {
-    Promise.all([fetchSources(), fetchCurrentAQI()])
+    setLoading(true);
+    Promise.all([window.fetchSources(), window.fetchCurrentAQI()])
       .then(([sourceData, currentData]) => {
-        const byWard = Object.fromEntries(currentData.map((row) => [row.ward, row]));
-        setSources(
-          sourceData.map((item) => ({
-            ...item,
-            latitude: byWard[item.ward]?.latitude,
-            longitude: byWard[item.ward]?.longitude,
-          }))
-        );
+        console.log("Source data:", sourceData);
+        setSources(Array.isArray(sourceData) ? sourceData : []);
       })
-      .catch(() => setSources([]));
+      .catch((err) => {
+        console.error("Error in PollutionSourcePage:", err);
+        setSources([]);
+      })
+      .finally(() => setLoading(false));
   }, []);
+
+  const styles = {
+    container: {
+      background: "#ffffff",
+      borderRadius: "20px",
+      padding: "20px",
+      boxShadow: "0 12px 30px rgba(20, 61, 42, 0.08)",
+    },
+    list: {
+      listStyle: "none",
+      padding: 0,
+      margin: 0,
+      marginTop: "20px",
+    },
+    item: {
+      background: "#f8fcf8",
+      border: "1px solid #e6efe7",
+      borderRadius: "12px",
+      padding: "15px",
+      marginBottom: "10px",
+      fontSize: "14px",
+    },
+  };
 
   return React.createElement(
     "div",
-    null,
-    React.createElement(MapCard, {
-      title: "Detected Pollution Sources",
-      data: sources,
-      valueKey: "source",
-      colorForValue: sourceColor,
-    })
+    { style: styles.container },
+    React.createElement("h2", null, "Detected Pollution Sources"),
+    loading
+      ? React.createElement("p", null, "Loading source data...")
+      : sources && sources.length > 0
+      ? React.createElement(
+          "ul",
+          { style: styles.list },
+          ...sources.map((item, idx) =>
+            React.createElement(
+              "li",
+              { key: idx, style: styles.item },
+              React.createElement("strong", null, item.ward || "Unknown Ward"),
+              React.createElement(
+                "div",
+                { style: { fontSize: "12px", marginTop: "5px", color: "#666" } },
+                `Source: ${item.source || "Unknown source"}`,
+                item.confidence &&
+                  React.createElement(
+                    "div",
+                    null,
+                    `Confidence: ${Math.round(item.confidence * 100)}%`
+                  )
+              )
+            )
+          )
+        )
+      : React.createElement("p", null, "No source data available")
   );
-}
-
-function sourceColor(source) {
-  const palette = {
-    construction_dust: "#c98b42",
-    traffic_emissions: "#e76f51",
-    biomass_burning: "#8d5524",
-    industrial_pollution: "#457b9d",
-  };
-  return palette[source] || "#6c757d";
-}
+};

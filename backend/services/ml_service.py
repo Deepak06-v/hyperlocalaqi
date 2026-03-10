@@ -148,12 +148,10 @@ def persist_predictions(db: Session, forecasts: List[Dict]) -> None:
 def persist_sources(db: Session, sources: List[Dict]) -> None:
     db.query(PollutionSourceRecord).delete()
     for item in sources:
-        db.add(
-            PollutionSourceRecord(
-                ward=item["ward"],
-                detected_at=item["detected_at"],
-                predicted_source=item["source"],
-                confidence=item["confidence"],
-            )
-        )
+        db.add(PollutionSourceRecord(
+            ward=item["ward"],
+            detected_at=item["detected_at"],
+            predicted_source=item["source"],
+            confidence=item["confidence"],
+        ))
     db.commit()

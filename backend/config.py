@@ -4,9 +4,11 @@ from dataclasses import dataclass
 
 @dataclass
 class Settings:
+    # Use SQLite for local development (no PostgreSQL required)
+    # For production, use: postgresql://postgres:password@postgres:5432/hyperlocal_aqi
     database_url: str = os.getenv(
         "DATABASE_URL",
-        "postgresql://postgres:postgres@localhost:5432/hyperlocal_aqi",
+        "sqlite:///./hyperlocal_aqi.db",
     )
     cpcb_api_url: str = os.getenv(
         "CPCB_API_URL",

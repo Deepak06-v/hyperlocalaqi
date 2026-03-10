@@ -39,24 +39,38 @@ def get_current_aqi(db: Session = Depends(get_db)):
 
 @router.get("/aqi/predict", response_model=List[AQIForecastPoint])
 def get_aqi_prediction(db: Session = Depends(get_db)):
-    forecasts = predict_next_24_hours(db)
-    persist_predictions(db, forecasts)
-    return [AQIForecastPoint(**item) for item in forecasts]
+    try:
+        forecasts = predict_next_24_hours(db)
+        persist_predictions(db, forecasts)
+        return [AQIForecastPoint(**item) for item in forecasts]
+    except Exception as e:
+        print(f"Error in get_aqi_prediction: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        # Return empty list as fallback
+        return []
 
 
 @router.get("/pollution/source", response_model=List[PollutionSourceResponse])
 def get_pollution_source(db: Session = Depends(get_db)):
-    sources = detect_pollution_sources(db)
-    persist_sources(db, sources)
-    return [
-        PollutionSourceResponse(
-            ward=item["ward"],
-            detected_at=item["detected_at"],
-            source=item["source"],
-            confidence=item["confidence"],
-        )
-        for item in sources
-    ]
+    try:
+        sources = detect_pollution_sources(db)
+        persist_sources(db, sources)
+        return [
+            PollutionSourceResponse(
+                ward=item["ward"],
+                detected_at=item["detected_at"],
+                source=item["source"],
+                confidence=item.get("confidence"),
+            )
+            for item in sources
+        ]
+    except Exception as e:
+        print(f"Error in get_pollution_source: {str(e)}")
+        import traceback
+        traceback.print_exc()
+        # Return empty list as fallback
+        return []
 
 
 @router.get("/recommendations", response_model=List[RecommendationResponse])

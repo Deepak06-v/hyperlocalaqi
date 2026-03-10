@@ -1,53 +1,40 @@
-﻿import { NavBar } from "./components/NavBar.js";
-import { AQIMapPage } from "./pages/AQIMapPage.js";
-import { ForecastPage } from "./pages/ForecastPage.js";
-import { PollutionSourcePage } from "./pages/PollutionSourcePage.js";
-import { AdminPanelPage } from "./pages/AdminPanelPage.js";
+﻿window.App = function App() {
+  const [page, setPage] = React.useState("map");
 
-const { BrowserRouter, Routes, Route } = ReactRouterDOM;
+  React.useEffect(() => {
+    window.currentPage = page;
+    window.switchPage = setPage;
+  }, [page]);
 
-export default function App() {
+  const getPageContent = () => {
+    switch (page) {
+      case "map":
+        return React.createElement(window.AQIMapPage);
+      case "forecast":
+        return React.createElement(window.ForecastPage);
+      case "sources":
+        return React.createElement(window.PollutionSourcePage);
+      case "admin":
+        return React.createElement(window.AdminPanelPage);
+      default:
+        return React.createElement(window.AQIMapPage);
+    }
+  };
+
+  const appStyles = {
+    shell: {
+      minHeight: "100vh",
+      background: "linear-gradient(180deg, #eff6ec 0%, #dfeae2 100%)",
+    },
+    main: {
+      padding: "24px",
+    },
+  };
+
   return React.createElement(
-    BrowserRouter,
-    null,
-    React.createElement(
-      "div",
-      { style: styles.shell },
-      React.createElement(NavBar),
-      React.createElement(
-        "main",
-        { style: styles.main },
-        React.createElement(
-          Routes,
-          null,
-          React.createElement(Route, {
-            path: "/",
-            element: React.createElement(AQIMapPage),
-          }),
-          React.createElement(Route, {
-            path: "/forecast",
-            element: React.createElement(ForecastPage),
-          }),
-          React.createElement(Route, {
-            path: "/sources",
-            element: React.createElement(PollutionSourcePage),
-          }),
-          React.createElement(Route, {
-            path: "/admin",
-            element: React.createElement(AdminPanelPage),
-          })
-        )
-      )
-    )
+    "div",
+    { style: appStyles.shell },
+    React.createElement(window.NavBar),
+    React.createElement("main", { style: appStyles.main }, getPageContent())
   );
-}
-
-const styles = {
-  shell: {
-    minHeight: "100vh",
-    background: "linear-gradient(180deg, #eff6ec 0%, #dfeae2 100%)",
-  },
-  main: {
-    padding: "24px",
-  },
 };
