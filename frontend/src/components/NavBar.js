@@ -1,4 +1,4 @@
-﻿window.NavBar = function NavBar() {
+﻿window.NavBar = function NavBar({ isMobile }) {
   const items = [
     { id: "map", label: "AQI Map" },
     { id: "forecast", label: "AQI Forecast" },
@@ -6,63 +6,27 @@
     { id: "admin", label: "Admin Panel" },
   ];
 
-  const navStyles = {
-    nav: {
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      padding: "20px 24px",
-      background: "#143d2a",
-      color: "#f4fbf2",
-      position: "sticky",
-      top: 0,
-      zIndex: 1000,
-    },
-    title: {
-      margin: 0,
-      fontSize: "1.4rem",
-    },
-    links: {
-      display: "flex",
-      gap: "12px",
-      flexWrap: "wrap",
-    },
-    link: {
-      color: "#d8f4e0",
-      padding: "10px 14px",
-      borderRadius: "999px",
-      background: "rgba(255,255,255,0.08)",
-      cursor: "pointer",
-      border: "none",
-      fontSize: "14px",
-    },
-    activeLink: {
-      background: "#9fe870",
-      color: "#143d2a",
-    },
-  };
-
+  // styles moved to CSS classes
   return React.createElement(
     "nav",
-    { style: navStyles.nav },
-    React.createElement("h1", { style: navStyles.title }, "HyperLocal AQI Dashboard"),
+    { className: "navbar" },
+    React.createElement("h1", { className: "navbar-title" }, "HyperLocal AQI Dashboard"),
     React.createElement(
       "div",
-      { style: navStyles.links },
-      ...items.map((item) =>
-        React.createElement(
+      { className: "navbar-links" },
+      ...items.map((item) => {
+        const classes = ["navbar-link"];
+        if (window.currentPage === item.id) classes.push("navbar-link-active");
+        return React.createElement(
           "button",
           {
             key: item.id,
             onClick: () => window.switchPage(item.id),
-            style: {
-              ...navStyles.link,
-              ...(window.currentPage === item.id ? navStyles.activeLink : {}),
-            },
+            className: classes.join(" "),
           },
           item.label
-        )
-      )
+        );
+      })
     )
   );
 };

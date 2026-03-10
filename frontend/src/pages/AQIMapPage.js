@@ -16,32 +16,6 @@
       .finally(() => setLoading(false));
   }, []);
 
-  const styles = {
-    grid: {
-      display: "grid",
-      gridTemplateColumns: "2fr 1fr",
-      gap: "20px",
-    },
-    panel: {
-      background: "#ffffff",
-      borderRadius: "20px",
-      padding: "20px",
-      boxShadow: "0 12px 30px rgba(20, 61, 42, 0.08)",
-    },
-    row: {
-      padding: "14px 0",
-      borderBottom: "1px solid #e7efe4",
-      fontSize: "14px",
-    },
-    badge: {
-      display: "inline-block",
-      marginLeft: "10px",
-      padding: "4px 8px",
-      borderRadius: "999px",
-      background: "#eaf7e3",
-      fontSize: "12px",
-    },
-  };
 
   function colorForAQI(aqi) {
     if (!aqi) return "#999";
@@ -53,7 +27,7 @@
 
   return React.createElement(
     "div",
-    { style: styles.grid },
+    { className: "aqi-grid" },
     React.createElement(window.MapCard, {
       title: "Ward-Level AQI Heatmap",
       data,
@@ -61,8 +35,8 @@
     }),
     React.createElement(
       "section",
-      { style: styles.panel },
-      React.createElement("h2", null, "Citizen Health Advisories"),
+      { className: "card" },
+      React.createElement("h2", { className: "card-heading" }, "Citizen Health Advisories"),
       loading
         ? React.createElement("p", null, "Loading advisories...")
         : data.length === 0
@@ -73,14 +47,14 @@
             ...data.map((item) =>
               React.createElement(
                 "div",
-                { key: item.ward, style: styles.row },
+                { key: item.ward, className: "row" },
                 React.createElement("strong", null, item.ward),
                 React.createElement(
                   "span",
-                  { style: styles.badge },
+                  { className: "badge" },
                   `AQI ${Math.round(item.aqi)}`
                 ),
-                React.createElement("p", { style: { margin: "5px 0", fontSize: "12px" } }, item.advisory)
+                React.createElement("p", { className: "advisory-text" }, item.advisory)
               )
             )
           )

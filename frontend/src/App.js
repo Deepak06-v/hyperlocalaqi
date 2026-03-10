@@ -1,40 +1,40 @@
 ﻿window.App = function App() {
   const [page, setPage] = React.useState("map");
+  const [width, setWidth] = React.useState(window.innerWidth);
 
   React.useEffect(() => {
     window.currentPage = page;
     window.switchPage = setPage;
   }, [page]);
 
+  React.useEffect(() => {
+    const handle = () => setWidth(window.innerWidth);
+    window.addEventListener("resize", handle);
+    return () => window.removeEventListener("resize", handle);
+  }, []);
+
+  const isMobile = width < 600;
+
   const getPageContent = () => {
     switch (page) {
       case "map":
-        return React.createElement(window.AQIMapPage);
+        return React.createElement(window.AQIMapPage, { isMobile });
       case "forecast":
-        return React.createElement(window.ForecastPage);
+        return React.createElement(window.ForecastPage, { isMobile });
       case "sources":
-        return React.createElement(window.PollutionSourcePage);
+        return React.createElement(window.PollutionSourcePage, { isMobile });
       case "admin":
-        return React.createElement(window.AdminPanelPage);
+        return React.createElement(window.AdminPanelPage, { isMobile });
       default:
-        return React.createElement(window.AQIMapPage);
+        return React.createElement(window.AQIMapPage, { isMobile });
     }
   };
 
-  const appStyles = {
-    shell: {
-      minHeight: "100vh",
-      background: "linear-gradient(180deg, #eff6ec 0%, #dfeae2 100%)",
-    },
-    main: {
-      padding: "24px",
-    },
-  };
-
+  // main padding is handled in CSS (.main) with media queries
   return React.createElement(
     "div",
-    { style: appStyles.shell },
-    React.createElement(window.NavBar),
-    React.createElement("main", { style: appStyles.main }, getPageContent())
+    { className: "shell" },
+    React.createElement(window.NavBar, { isMobile }),
+    React.createElement("main", { className: "main" }, getPageContent())
   );
 };
